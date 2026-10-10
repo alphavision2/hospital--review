@@ -144,7 +144,7 @@ export const loginUser = async(req,res) => {
       return res.status(500)
       .json({
         success: false,
-        message:"serevr configuration error"
+        message:"server configuration error"
       });
     }
 

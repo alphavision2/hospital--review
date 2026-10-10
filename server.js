@@ -3,8 +3,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
+import {protect} from "./middleware/authMiddleware.js";
 
 dotenv.config();
+console.log("current folder",process.cwd());
+console.log("jwt_seceret loaded",Boolean(process.env.JWT_SECRET));
 
 
 const app = express();
@@ -14,6 +17,15 @@ app.use(express.json());
 
 
 app.use("/api/auth",authRoutes);
+
+app.get("/api/auth/profile",protect,(req,res)=>{
+  res.status(200)
+  .json({
+    success:true,
+    message:"Authentication successfully",
+    user:req.user
+  });
+});
 
 
 app.get("/", (req,res)=>{
