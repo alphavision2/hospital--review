@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
 import {protect} from "./middleware/authMiddleware.js";
 import hospitalRoutes from "./routes/hospitalRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 
 dotenv.config();
 console.log("current folder",process.cwd());
@@ -19,6 +20,7 @@ app.use(express.json());
 
 app.use("/api/auth",authRoutes);
 app.use("/api/hospitals",hospitalRoutes);
+app.use("/api/reviews",reviewRoutes);
 
 
 app.get("/api/auth/profile",protect,(req,res)=>{

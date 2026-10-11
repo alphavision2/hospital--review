@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const reviewSchema = new mongoose.Schema({
   user:{
@@ -7,7 +7,7 @@ const reviewSchema = new mongoose.Schema({
     required:true
   },
   hospital:{
-    type:mongoose.hospital.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref:"Hospital",
     reuired:true
   },
