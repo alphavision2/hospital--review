@@ -8,21 +8,20 @@ import hospitalRoutes from "./routes/hospitalRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 
 dotenv.config();
-console.log("current folder",process.cwd());
-console.log("jwt_seceret loaded",Boolean(process.env.JWT_SECRET));
 
 
 const app = express();
 
-app.use(cors({
-  origin:"http://localhost:5173/",
+app.use(
+  cors({                                  
+  origin:"http://localhost:5173",
 })
-);           // ALLOW OUR REACT FRONTEND TO COMMUNICATE WITH THE BACKEND
+);       
 app.use(express.json());
 
 
-app.use("/api/auth",authRoutes);
 app.use("/api/hospitals",hospitalRoutes);
+app.use("/api/auth",authRoutes);
 app.use("/api/reviews",reviewRoutes);
 
 
