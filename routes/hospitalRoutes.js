@@ -6,6 +6,7 @@ import {
   getHospitalById,
 } from "../controllers/hospitalcontroller.js";
 
+import { importHospitals } from "../controllers/hospitalImportController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -27,6 +28,7 @@ router.get("/", getHospitals);
 router.get("/:id", getHospitalById);
 
 // Protected route: only logged-in admins can create hospitals
+router.post("/import", protect, adminOnly, importHospitals);
 router.post("/", protect, adminOnly, createdHospital);
 
 export default router;

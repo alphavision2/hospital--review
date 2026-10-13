@@ -6,7 +6,6 @@ import authRoutes from "./routes/authRoutes.js";
 import {protect} from "./middleware/authMiddleware.js";
 import hospitalRoutes from "./routes/hospitalRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
-
 dotenv.config();
 
 

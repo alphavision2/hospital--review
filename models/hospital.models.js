@@ -11,7 +11,8 @@ const hospitalSchema = new mongoose.Schema(
 
     hospitalType: {
       type: String,
-      enum: ["government", "private"],
+      enum: ["government", "private","unknown"],
+      default:"unknown",
       required: true,
       lowercase: true,
       trim: true,
