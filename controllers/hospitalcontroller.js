@@ -22,10 +22,12 @@ export const getHospitals = async(req, res) =>{
 };
 
 
-export const createdHospital = async(req,res) =>{
-  try{
-    const{
+
+export const createdHospital = async (req, res) => {
+  try {
+    const {
       name,
+      hospitalType,
       address,
       city,
       state,
@@ -34,40 +36,49 @@ export const createdHospital = async(req,res) =>{
       email,
       specialties,
       description,
-    }=req.body;
+    } = req.body;
 
-    if(!name || !address || !city || !state){
-      return res.status(400)
-      .json({
-        success:false,
-        message:"name,address,city and state are required"
+    if (!name || !hospitalType || !address || !city || !state) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Name, hospital type, address, city, and state are required.",
+      });
+    }
+
+    const normalizedType = hospitalType.toLowerCase().trim();
+
+    if (!["government", "private"].includes(normalizedType)) {
+      return res.status(400).json({
+        success: false,
+        message: "Hospital type must be government or private.",
       });
     }
 
     const hospital = await Hospital.create({
-      name,
-      address,
-      city,
-      state,
+      name: name.trim(),
+      hospitalType: normalizedType,
+      address: address.trim(),
+      city: city.trim(),
+      state: state.trim(),
       pinCode,
       phone,
       email,
       specialties,
-      description
+      description,
     });
 
-    return res.status(201)
-    .json({
-      success:true,
-      messsage:"hospital added successfull",hospital
+    return res.status(201).json({
+      success: true,
+      message: "Hospital added successfully.",
+      hospital,
     });
-  }catch(error){
-    console.error("create hospital error",error.message);
+  } catch (error) {
+    console.error("Create hospital error:", error.message);
 
-    return res.status(500)
-    .json({
-      success:false,
-      message:"failed to add hospital"
+    return res.status(500).json({
+      success: false,
+      message: "Failed to add hospital.",
     });
   }
 };

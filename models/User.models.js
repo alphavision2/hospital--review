@@ -24,8 +24,33 @@ const userSchema = new mongoose.Schema({
       enum:["user","admin"],
       default:"user"
   },
-},{timestamps:true});
+  
+  isEmailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  emailOtpHash: {
+    type: String,
+    default: null,
+    select: false,
+  },
+  emailOtpExpiresAt: {
+    type: Date,
+    default: null,
+    select: false,
+  },
+  emailOtpAttempts: {
+    type: Number,
+    default: 0,
+    select: false,
+  },
+  emailOtpLastSentAt: {
+    type: Date,
+    default: null,
+    select: false,
+  },
+  },{timestamps:true});
 
-const User= mongoose.model("User",userSchema);
+  const User= mongoose.model("User",userSchema);
 
 export default User;
