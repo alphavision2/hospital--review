@@ -1,8 +1,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-const API_BASE = "http://localhost:5000/api";
+import { API_BASE } from "../api/config";
 
 function AddHospital() {
   const navigate = useNavigate();

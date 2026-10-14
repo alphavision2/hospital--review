@@ -6,8 +6,7 @@ import Login from "./pages/login";
 import { BrowserRouter, Routes, Route, Link,useNavigate } from "react-router-dom";
 import HospitalDetails from "./pages/HospitalDetails";
 import { useEffect, useState } from "react";
-
-const API_BASE = "http://localhost:5000/api";
+import { API_BASE } from "./api/config";
 
 function HomePage() {
   const handleLogout = () => {

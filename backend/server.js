@@ -6,10 +6,13 @@ import authRoutes from "./routes/authRoutes.js";
 import {protect} from "./middleware/authMiddleware.js";
 import hospitalRoutes from "./routes/hospitalRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 dotenv.config();
 
 
 const app = express();
+let connectionPromise;
 
 app.use(
   cors({                                  
@@ -18,6 +21,36 @@ app.use(
 );       
 app.use(express.json());
 
+async function connectToDatabase() {
+  if (mongoose.connection.readyState === 1) return;
+  if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI environment variable is required");
+  }
+
+  if (!connectionPromise) {
+    connectionPromise = mongoose.connect(process.env.MONGO_URI)
+      .then(() => {
+        console.log("MongoDB connected:", mongoose.connection.name);
+        connectionPromise = undefined;
+      })
+      .catch((error) => {
+        connectionPromise = undefined;
+        throw error;
+      });
+  }
+
+  await connectionPromise;
+}
+
+app.use(async (_req, _res, next) => {
+  try {
+    await connectToDatabase();
+    next();
+  } catch (error) {
+    console.error("MongoDB connection failed:", error.message);
+    next(error);
+  }
+});
 
 app.use("/api/hospitals",hospitalRoutes);
 app.use("/api/auth",authRoutes);
@@ -38,19 +71,14 @@ app.get("/", (req,res)=>{
   res.send("hospital review api is running!");
 })
 
-mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-  console.log("Mongodb connect succesfully!");
+const isStartedDirectly =
+  process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
-  console.log("Database:",mongoose.connection.name);
-  console.log("host:",mongoose.connection.host);
+if (isStartedDirectly) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`server running on port ${PORT}`);
+  });
+}
 
-const PORT = process.env.PORT||5000;
-
-app.listen(PORT,()=>{
-  console.log(`server running on port ${PORT}`);
-});
-})
-.catch((error) => {
-  console.log("mongodb connection is failed:",error.message);
-});
+export default app;
