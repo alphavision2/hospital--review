@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import "../app.css";
+import "../App.css";
 import { API_BASE } from "../api/config";
 
 function HospitalCategory() {
