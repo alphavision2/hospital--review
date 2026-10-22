@@ -4,7 +4,7 @@ import {
   loginUser,
   verifyEmailOtp,
   resendEmailOtp
-} from "../controllers/authControllers.js";
+} from "../controllers/authcontrollers.js";
 
 const router = express.Router();
 
