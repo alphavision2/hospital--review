@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { API_BASE } from "../api/config";
+import { API_BASE_URL } from "../api/config";
 
 function AddHospital() {
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ function AddHospital() {
         throw new Error("Please log in before adding a hospital.");
       }
 
-      const response = await fetch(`${API_BASE}/hospitals`, {
+      const response = await fetch(`${API_BASE_URL}/hospitals`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -87,7 +87,7 @@ function AddHospital() {
         throw new Error("Please log in with an administrator account.");
       }
 
-      const response = await fetch(`${API_BASE}/hospitals/import`, {
+      const response = await fetch(`${API_BASE_URL}/hospitals/import`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

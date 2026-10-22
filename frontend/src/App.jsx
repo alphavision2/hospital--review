@@ -6,7 +6,7 @@ import Login from "./pages/login";
 import { BrowserRouter, Routes, Route, Link,useNavigate } from "react-router-dom";
 import HospitalDetails from "./pages/HospitalDetails";
 import { useEffect, useState } from "react";
-import { API_BASE } from "./api/config";
+import { API_BASE_URL } from "./api/config";
 
 function HomePage() {
   const handleLogout = () => {
@@ -43,7 +43,7 @@ function HomePage() {
         setLoading(true);
         setError("");
 
-        const response = await fetch(`${API_BASE}/hospitals`);
+        const response = await fetch(`${API_BASE_URL}/hospitals`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -77,7 +77,7 @@ function HomePage() {
 
     try {
       const response = await fetch(
-        `${API_BASE}/reviews/hospital/${hospital._id}`,
+        `${API_BASE_URL}/reviews/hospital/${hospital._id}`,
       );
 
       const data = await response.json();
@@ -132,7 +132,7 @@ function HomePage() {
       setSubmitting(true);
 
       const response = await fetch(
-        `${API_BASE}/reviews/hospital/${selectedHospital._id}`,
+        `${API_BASE_URL}/reviews/hospital/${selectedHospital._id}`,
         {
           method: "POST",
           headers: {
@@ -168,7 +168,7 @@ function HomePage() {
 
       // Refresh hospital ratings
       try {
-        const hospitalResponse = await fetch(`${API_BASE}/hospitals`);
+        const hospitalResponse = await fetch(`${API_BASE_URL}/hospitals`);
 
         const hospitalData = await hospitalResponse.json();
 

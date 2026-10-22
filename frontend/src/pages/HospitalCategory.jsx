@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import "../App.css";
-import { API_BASE } from "../api/config";
+import { API_BASE_URL } from "../api/config";
 
 function HospitalCategory() {
   const { type } = useParams();
@@ -32,7 +32,7 @@ function HospitalCategory() {
         setLoading(true);
         setError("");
 
-        const response = await fetch(`${API_BASE}/hospitals`, {
+        const response = await fetch(`${API_BASE_URL}/hospitals`, {
           signal: controller.signal,
         });
 
