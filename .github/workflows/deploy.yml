@@ -16,9 +16,18 @@ jobs:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Validate Vercel secrets
+        shell: bash
+        run: |
+          if [ -z "${VERCEL_TOKEN}" ] || [ -z "${VERCEL_ORG_ID}" ] || [ -z "${VERCEL_PROJECT_ID}" ]; then
+            echo "Missing required Vercel secrets: VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID"
+            exit 1
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -28,12 +37,7 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-
       - name: Pull Vercel project settings
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
-
         run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
 
       - name: Build for production
