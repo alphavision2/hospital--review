@@ -39,7 +39,17 @@ function HospitalDetails() {
         if (cancelled) return;
 
         const data = hospitalResponse.data;
-        setHospital(data.hospital || data.data || data);
+        const hospitalData = data.hospital || data.data || data;
+
+        setHospital({
+          ...hospitalData,
+          specialties: Array.isArray(hospitalData.specialties)
+            ? hospitalData.specialties
+            : [],
+          description: hospitalData.description || "",
+          averageRating: Number(hospitalData.averageRating || 0),
+          totalReviews: Number(hospitalData.totalReviews || 0),
+        });;
 
         const reviewData = reviewsResponse.data;
         setReviews(
@@ -68,6 +78,7 @@ function HospitalDetails() {
     };
   }, [id]);
 
+  
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     setReviewMessage("");
@@ -77,9 +88,7 @@ function HospitalDetails() {
 
     if (!token) {
       setReviewError(true);
-      setReviewMessage(
-        "Please log in before submitting a review."
-      );
+      setReviewMessage("Please log in before submitting a review.");
       return;
     }
 
@@ -92,7 +101,8 @@ function HospitalDetails() {
     try {
       setSubmitting(true);
 
-      await api.post(
+      // Submit the review only once
+      const submitResponse = await api.post(
         `/reviews/hospital/${id}`,
         {
           rating: Number(rating),
@@ -106,22 +116,67 @@ function HospitalDetails() {
         }
       );
 
+      const result = submitResponse.data;
+
+      // Update hospital rating immediately from the backend response
+      if (result.hospitalRating) {
+        setHospital((previous) => ({
+          ...previous,
+          averageRating: Number(
+            result.hospitalRating.averageRating ?? previous.averageRating ?? 0
+          ),
+          totalReviews: Number(
+            result.hospitalRating.totalReviews ?? previous.totalReviews ?? 0
+          ),
+        }));
+      }
+
+      // Add the newly saved review immediately
+      if (result.review) {
+        setReviews((previous) => [
+          result.review,
+          ...previous.filter((item) => item._id !== result.review._id),
+        ]);
+      }
+
       setReviewMessage("Your review was submitted successfully!");
       setReviewError(false);
       setComment("");
       setDepartment("");
       setRating(5);
-
-      const response = await api.get(`/reviews/hospital/${id}`);
-      const reviewData = response.data;
-
-      setReviews(
-        Array.isArray(reviewData.reviews)
-          ? reviewData.reviews
-          : []
-      );
-
       setActiveTab("reviews");
+
+      // Refresh reviews separately; failure here must not report submission failure
+      try {
+        const response = await api.get(`/reviews/hospital/${id}`);
+        const reviewData = response.data;
+
+        if (Array.isArray(reviewData.reviews)) {
+          setReviews(reviewData.reviews);
+        }
+      } catch (refreshError) {
+        console.error("Review refresh error:", refreshError);
+      }
+
+      // Refresh hospital statistics separately
+      try {
+        const response = await api.get(`/hospitals/${id}`);
+        const data = response.data;
+        const hospitalData = data.hospital || data.data || data;
+
+        setHospital((previous) => ({
+          ...previous,
+          ...hospitalData,
+          averageRating: Number(hospitalData.averageRating ?? 0),
+          totalReviews: Number(hospitalData.totalReviews ?? 0),
+          specialties: Array.isArray(hospitalData.specialties)
+            ? hospitalData.specialties
+            : [],
+          description: hospitalData.description || "",
+        }));
+      } catch (refreshError) {
+        console.error("Hospital statistics refresh error:", refreshError);
+      }
     } catch (err) {
       console.error(
         "Review submission error:",
@@ -137,6 +192,7 @@ function HospitalDetails() {
       setSubmitting(false);
     }
   };
+
 
   if (loading) {
     return (
@@ -167,9 +223,7 @@ function HospitalDetails() {
     : [];
 
   const averageRating = Number(hospital.averageRating || 0);
-  const totalReviews = Number(
-    hospital.totalReviews ?? reviews.length
-  );
+  const totalReviews = reviews.length;
 
   return (
     <div className="hd-page">

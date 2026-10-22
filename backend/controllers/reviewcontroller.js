@@ -2,91 +2,140 @@ import Review from "../models/review.models.js";
 import Hospital from "../models/hospital.models.js";
 
 
-export const createReview = async(req, res)=>{
-  try{
-    const {rating,comment,department,visitDate} = req.body;
 
-    const {hospitalId} = req.params;
+export const createReview = async (req, res) => {
+  let reviewSaved = false;
 
-    if(rating === undefined || !Number.isInteger(Number(rating))||Number(rating)<1 || Number(rating)>5){
-      return res.status(400)
-      .json({
-        success:false,
-        message:"Rating must be a whole number from 1 to 5"
+  try {
+    const { rating, comment, department, visitDate } = req.body;
+    const { hospitalId } = req.params;
+
+    // Validate rating
+    const numericRating = Number(rating);
+
+    if (
+      rating === undefined ||
+      !Number.isInteger(numericRating) ||
+      numericRating < 1 ||
+      numericRating > 5
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Rating must be a whole number from 1 to 5",
       });
     }
 
-    if(typeof comment !== "string" || comment.trim().length<5 || comment.trim().length>1000){
-      return res.status(400)
-      .json({
-          success:false,
-          message:"Comment must be contain 5 to 1000 charecter"
+    // Validate comment
+    if (
+      typeof comment !== "string" ||
+      comment.trim().length < 5 ||
+      comment.trim().length > 1000
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Comment must contain 5 to 1000 characters",
       });
     }
 
+    // Find hospital
     const hospital = await Hospital.findById(hospitalId);
 
-    if(!hospital){
-      return res.status(404)
-      .json({
-        success:false,
-        message:"hospital not found"
+    if (!hospital) {
+      return res.status(404).json({
+        success: false,
+        message: "Hospital not found",
       });
     }
 
-
+    // Create review
     const review = await Review.create({
-      user:req.user.userId,
-      hospital:hospitalId,
-      rating:Number(rating),
-      comment:comment.trim(),department,visitDate
+      user: req.user.userId,
+      hospital: hospital._id,
+      rating: numericRating,
+      comment: comment.trim(),
+      department: department?.trim() || undefined,
+      ...(visitDate ? { visitDate } : {}),
     });
 
+    reviewSaved = true;
 
+    // Calculate average rating and total reviews
     const stats = await Review.aggregate([
-      {$match:{hospital:hospital._id}},
       {
-        $group:{
-          _id:"$hospital",
-          averageRating:{$avg:"$rating"},
-          totalReviews:{$sum:1}
+        $match: {
+          hospital: hospital._id,
+        },
+      },
+      {
+        $group: {
+          _id: "$hospital",
+          averageRating: { $avg: "$rating" },
+          totalReviews: { $sum: 1 },
         },
       },
     ]);
-    
-    hospital.averageRating = stats[0]?.averageRating ?? 0;
-    hospital.totalReviews = stats[0]?.totalReviews ?? 0;
 
-    await hospital.save();
+    const averageRating = Number(
+      (stats[0]?.averageRating ?? 0).toFixed(2)
+    );
+    const totalReviews = stats[0]?.totalReviews ?? 0;
 
-    return res.status(201)
-    .json({
-      success:true,
-      message:"Review submited successfully",review,
-      hospitalRating:{
-        averageRating:hospital.averageRating,
-        totalReviews:hospital.totalReviews
+    // Update hospital statistics
+    const updatedHospital = await Hospital.findByIdAndUpdate(
+      hospital._id,
+      {
+        $set: {
+          averageRating,
+          totalReviews,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedHospital) {
+      throw new Error("Hospital statistics could not be updated");
+    }
+
+    // Return successful response
+    return res.status(201).json({
+      success: true,
+      message: "Review submitted successfully !!",
+      review,
+      hospital: {
+        _id: updatedHospital._id,
+        averageRating: updatedHospital.averageRating,
+        totalReviews: updatedHospital.totalReviews,
+      },
+      hospitalRating: {
+        averageRating: updatedHospital.averageRating,
+        totalReviews: updatedHospital.totalReviews,
       },
     });
-  }catch(error){
-    console.error("create review error",error.message);
+  } catch (error) {
+    console.error("CREATE REVIEW ERROR:", error);
 
-    if(error.name === "CastError"){
-      return res.status(400)
-      .json({
-        success:false,
-        message:"Invalid hospital Id"
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid hospital ID",
       });
     }
 
-
-    return res.status(500)
-    .json({
-      success:false,
-      message:"failed to submit reviews"
+    // Avoid suggesting that the review was not saved if it was
+    return res.status(500).json({
+      success: false,
+      reviewSaved,
+      message: reviewSaved
+        ? "Your review was saved, but the hospital rating could not be updated. Please refresh the page."
+        : "Failed to submit review. Please try again.",
     });
   }
 };
+
+
 
 
 export const getHospitalReviews = async(req, res) => {
@@ -104,7 +153,7 @@ export const getHospitalReviews = async(req, res) => {
     }
 
     const reviews= await Review.find({hospital:hospitalId})
-    .populate("user","fullname")
+    .populate("user", "fullName")
     .sort({createdAt:-1});
 
     return res.status(200)
