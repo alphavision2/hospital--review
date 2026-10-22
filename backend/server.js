@@ -14,9 +14,15 @@ dotenv.config();
 const app = express();
 let connectionPromise;
 
+
+const allowedorigins = [
+  "http://localhost:5173",
+  "http://hospital-review-9dkk-nine.vercel.app",
+]
+
 app.use(
   cors({                                  
-  origin:"http://localhost:5173",
+  origin:allowedorigins,
 })
 );       
 app.use(express.json());
