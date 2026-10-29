@@ -14,17 +14,42 @@ dotenv.config();
 const app = express();
 let connectionPromise;
 
+
 const allowedOrigins = [
   "http://localhost:5173",
   "https://hospital-review-five.vercel.app",
-  "https://hospital-review-7lo02n3kj-vision-b3a4.vercel.app",
 ];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // Allow requests without an Origin header, such as server-to-server requests.
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      // Allow the local frontend and stable production frontend.
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Allow this project's generated Vercel deployment URLs.
+      const isVercelDeployment =
+        /^https:\/\/hospital-review-[a-z0-9-]+-vision-b3a4\.vercel\.app$/.test(
+          origin
+        );
+
+      if (isVercelDeployment) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked origin: ${origin}`));
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
       
 app.use(express.json());
