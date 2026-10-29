@@ -485,9 +485,12 @@ footer > span {
   }
 }
 
+
 @media (max-width: 600px) {
   .navbar {
-    gap: 15px;
+    gap: 12px;
+    padding: 12px 4%;
+    flex-wrap: wrap;
   }
 
   .logo {
@@ -498,6 +501,12 @@ footer > span {
     order: 3;
     width: 100%;
     justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .navbar nav a {
+    font-size: 12px;
   }
 
   .nav-buttons {
@@ -506,174 +515,198 @@ footer > span {
 
   .login-btn,
   .register-btn {
-    padding: 9px 12px;
+    padding: 9px 10px;
   }
 
+  /* Keep the desktop two-column hero layout */
   .hero {
-    grid-template-columns: 1fr;
-    padding-top: 45px;
-    padding-bottom: 40px;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+    gap: 12px;
+    padding: 32px 4%;
   }
 
   .hero h1 {
-    font-size: 37px;
+    font-size: clamp(23px, 5vw, 37px);
+    letter-spacing: -0.8px;
+  }
+
+  .hero-content > p {
+    font-size: 13px;
+    line-height: 1.6;
   }
 
   .hero-illustration {
-    display: none;
+    display: grid;
+    min-width: 0;
   }
 
+  .medical-card {
+    min-height: 0;
+    padding: 12px 8px;
+    transform: none;
+  }
+
+  .medical-cross {
+    width: 38px;
+    height: 38px;
+    font-size: 26px;
+    border-radius: 12px;
+  }
+
+  .medical-card h3 {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .medical-card p {
+    font-size: 11px;
+  }
+
+  .medical-building {
+    font-size: 40px;
+  }
+
+  /* Keep search controls side by side when possible */
   .search-box {
+    gap: 6px;
+    padding: 7px;
     flex-wrap: wrap;
   }
 
   .search-box input,
   .search-box select {
     flex: 1 1 100%;
+    min-width: 0;
+    padding: 9px 5px;
     border-left: none;
     border-bottom: 1px solid #e4eaf2;
   }
 
   .search-box button {
     width: 100%;
+    padding: 10px;
   }
 
+  /* Keep four feature columns on phones */
   .features {
-    grid-template-columns: repeat(2, 1fr);
-    padding-top: 25px;
-    padding-bottom: 25px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding: 18px 2%;
   }
 
   .feature {
-    border-right: none;
+    min-width: 0;
+    padding: 8px 3px;
+  }
+
+  .feature > span {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    font-size: 18px;
+  }
+
+  .feature h3 {
+    font-size: 11px;
+    overflow-wrap: anywhere;
+  }
+
+  .feature p {
+    font-size: 10px;
+    overflow-wrap: anywhere;
+  }
+
+  .hospital-section {
+    padding: 35px 4%;
   }
 
   .section-heading {
     align-items: start;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
   .section-heading h2 {
-    font-size: 27px;
-  }
-
-  .hospital-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .cta {
-    align-items: stretch;
-    flex-direction: column;
-    padding: 25px;
-  }
-
-  .cta h2 {
     font-size: 24px;
   }
 
+  /* Preserve the desktop three-column card arrangement */
+  .hospital-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .hospital-info {
+    padding: 9px;
+  }
+
+  .hospital-image {
+    min-height: 85px;
+    font-size: 40px;
+  }
+
+  .image-label {
+    bottom: 5px;
+    left: 5px;
+    padding: 4px;
+    font-size: 8px;
+  }
+
+  .hospital-info h3 {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .hospital-specialty {
+    font-size: 8px;
+    overflow-wrap: anywhere;
+  }
+
+  .hospital-location,
+  .review-count {
+    font-size: 10px;
+    overflow-wrap: anywhere;
+  }
+
+  .rating {
+    gap: 3px;
+    margin: 10px 0;
+  }
+
+  .rating strong {
+    font-size: 13px;
+  }
+
+  .stars {
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+
+  .details-btn {
+    padding: 9px 4px;
+    font-size: 10px;
+    white-space: normal;
+  }
+
+  .cta {
+    margin: 0 4% 35px;
+    padding: 20px;
+    gap: 15px;
+  }
+
+  .cta h2 {
+    font-size: 22px;
+  }
+
+  .cta .register-btn {
+    min-width: 0;
+    width: 100%;
+  }
+
   footer {
+    padding: 20px 4%;
     align-items: start;
     flex-direction: column;
     gap: 8px;
   }
-  .status-message {
-  grid-column: 1 / -1;
-  padding: 20px;
-  color: #315780;
-  text-align: center;
-}
-
-.error-message {
-  color: #c62828;
-  background: #fff0f0;
-  border-radius: 10px;
-}
-
-/* Category page backgrounds */
-.category-page {
-  min-height: 100vh;
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background-color: #f5f9ff;
-  background-image:
-    radial-gradient(
-      ellipse at 10% 5%,
-      rgba(83, 177, 255, 0.18),
-      transparent 42%
-    ),
-    radial-gradient(
-      ellipse at 90% 30%,
-      rgba(8, 127, 140, 0.10),
-      transparent 38%
-    ),
-    linear-gradient(180deg, #edf6ff 0%, #f8fbff 48%, #ffffff 100%);
-}
-
-/* Government hospitals: calm blue and civic teal */
-.category-government {
-  background-color: #eff7ff;
-  background-image:
-    radial-gradient(
-      circle at 85% 8%,
-      rgba(64, 161, 238, 0.22),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 8% 35%,
-      rgba(23, 166, 160, 0.12),
-      transparent 32%
-    ),
-    linear-gradient(180deg, #e7f3ff 0%, #f3f9ff 45%, #ffffff 100%);
-}
-
-/* Private hospitals: premium aqua and soft mint */
-.category-private {
-  background-color: #f1fbfa;
-  background-image:
-    radial-gradient(
-      circle at 88% 8%,
-      rgba(22, 166, 160, 0.20),
-      transparent 29%
-    ),
-    radial-gradient(
-      circle at 10% 32%,
-      rgba(112, 207, 190, 0.17),
-      transparent 32%
-    ),
-    linear-gradient(180deg, #e8f8f5 0%, #f5fbfa 45%, #ffffff 100%);
-}
-
-/* Subtle card interaction without changing card layout */
-.category-page .hospital-card {
-  transition:
-    transform 0.22s ease,
-    box-shadow 0.22s ease,
-    border-color 0.22s ease;
-}
-
-.category-page .hospital-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 32px rgba(25, 67, 105, 0.12);
-  border-color: rgba(8, 127, 140, 0.25);
-}
-
-/* Accessible keyboard interaction */
-.category-page button:focus-visible,
-.category-page input:focus-visible,
-.category-page select:focus-visible,
-.category-page a:focus-visible {
-  outline: 3px solid rgba(8, 127, 140, 0.45);
-  outline-offset: 3px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .category-page .hospital-card {
-    transition: none;
-  }
-
-  .category-page .hospital-card:hover {
-    transform: none;
-  }
-}
 }

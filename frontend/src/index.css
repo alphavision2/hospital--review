@@ -28,3 +28,81 @@ select:focus-visible {
   outline: 3px solid #93c5fd;
   outline-offset: 3px;
 }
+
+/* Global responsive fixes for MediReview+ */
+
+/* Prevent padding and borders from increasing element widths */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal scrolling */
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Keep media inside their containers */
+img,
+video,
+iframe {
+  max-width: 100%;
+}
+
+/* Let form controls fit their containers */
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+/* Tablet and mobile */
+@media (max-width: 768px) {
+  .container,
+  .page-container,
+  .content-container {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  /* Prevent wide flex/grid children from forcing overflow */
+  .row,
+  .flex,
+  .grid {
+    min-width: 0;
+  }
+
+  /* Keep long text and URLs from widening the page */
+  h1,
+  h2,
+  h3,
+  p,
+  a {
+    overflow-wrap: anywhere;
+  }
+
+  /* Make wide tables usable on small screens */
+  table {
+    max-width: 100%;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  input,
+  select,
+  textarea,
+  button {
+    max-width: 100%;
+  }
+}

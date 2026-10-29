@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.models.js";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
+import Mailjet from "node-mailjet";
 import crypto from "crypto";
 
 const OTP_EXPIRY_MS = 15 * 60 * 1000;
@@ -14,40 +14,63 @@ const createOtp = () =>
 const hashOtp = (otp) =>
   crypto.createHash("sha256").update(otp).digest("hex");
 
+
+
 const emailConfigured = () =>
-  Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+  Boolean(
+    process.env.MJ_APIKEY_PUBLIC &&
+    process.env.MJ_APIKEY_PRIVATE &&
+    process.env.EMAIL_FROM
+  );
 
 const sendOtpEmail = async (email, otp) => {
   if (!emailConfigured()) {
-    throw new Error("Email configuration is missing");
+    throw new Error("Mailjet configuration is missing");
   }
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
+  const mailjet = new Mailjet({
+    apiKey: process.env.MJ_APIKEY_PUBLIC,
+    apiSecret: process.env.MJ_APIKEY_PRIVATE
   });
 
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Verify your MediReview+ email",
-    text: `Your MediReview+ verification code is ${otp}. It expires in 10 minutes. If you did not request this code, you can ignore this email.`,
-    html: `
-      <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto">
-        <h2>Welcome to MediReview+</h2>
-        <p>Use this code to verify your email address:</p>
-        <div style="font-size:32px;font-weight:bold;letter-spacing:8px">
-          ${otp}
-        </div>
-        <p>This code expires in 10 minutes.</p>
-        <p>If you did not request this code, ignore this email.</p>
-      </div>
-    `
-  });
+  const response = await mailjet
+    .post("send", { version: "v3.1" })
+    .request({
+      Messages: [
+        {
+          From: {
+            Email: process.env.EMAIL_FROM,
+            Name: "MediReview+"
+          },
+          To: [{ Email: email }],
+          Subject: "Verify your MediReview+ email",
+          TextPart: `Your MediReview+ verification code is ${otp}. It expires in 15 minutes.`,
+          HTMLPart: `
+            <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto">
+              <h2>Welcome to MediReview+</h2>
+              <p>Your email verification code is:</p>
+              <div style="font-size:32px;font-weight:bold;letter-spacing:8px">
+                ${otp}
+              </div>
+              <p>This code expires in 15 minutes.</p>
+              <p>If you did not request this code, ignore this email.</p>
+            </div>
+          `
+        }
+      ]
+    });
+
+  const message = response.body?.Messages?.[0];
+
+  if (!message || message.Status !== "success") {
+    console.error("Mailjet send response:", response.body);
+    throw new Error("Mailjet could not send the verification email");
+  }
+
+  console.log("Mailjet accepted OTP email:", message.To?.[0]?.MessageID);
 };
+
+
 
 
 export const registerUser = async (req, res) => {
