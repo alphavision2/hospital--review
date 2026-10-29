@@ -15,27 +15,30 @@ const app = express();
 let connectionPromise;
 
 
+
 const allowedOrigins = [
   "http://localhost:5173",
   "https://hospital-review-five.vercel.app",
 ];
 
-// Allow your production domain and your project's Vercel preview deployments.
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (
-        !origin ||
-        allowedOrigins.includes(origin) ||
-        /^https:\/\/hospital-review-[a-z0-9-]+-vision-b3a4\.vercel\.app$/.test(origin)
-      ) {
-        return callback(null, true);
-      }
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/hospital-review-[a-z0-9-]+-vision-b3a4\.vercel\.app$/.test(origin)
+    ) {
+      callback(null, true);
+    } else {
+      console.log("Blocked CORS origin:", origin);
+      callback(null, false);
+    }
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
 
-      return callback(new Error(`CORS blocked origin: ${origin}`));
-    },
-  })
-);
+app.use(cors(corsOptions));
 
 
 
