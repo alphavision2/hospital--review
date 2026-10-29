@@ -20,35 +20,23 @@ const allowedOrigins = [
   "https://hospital-review-five.vercel.app",
 ];
 
+// Allow your production domain and your project's Vercel preview deployments.
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests without an Origin header, such as server-to-server requests.
-      if (!origin) {
-        return callback(null, true);
-      }
-
-      // Allow the local frontend and stable production frontend.
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      // Allow this project's generated Vercel deployment URLs.
-      const isVercelDeployment =
-        /^https:\/\/hospital-review-[a-z0-9-]+-vision-b3a4\.vercel\.app$/.test(
-          origin
-        );
-
-      if (isVercelDeployment) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        /^https:\/\/hospital-review-[a-z0-9-]+-vision-b3a4\.vercel\.app$/.test(origin)
+      ) {
         return callback(null, true);
       }
 
       return callback(new Error(`CORS blocked origin: ${origin}`));
     },
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 
       
