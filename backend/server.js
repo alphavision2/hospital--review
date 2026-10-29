@@ -16,8 +16,8 @@ let connectionPromise;
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://hospital-review-9dkk-nine.vercel.app",
-  "https://hospital-review-9dkk-ilhi3aj53-vision-b3a4.vercel.app",
+  "https://hospital-review-five.vercel.app",
+  "https://hospital-review-7lo02n3kj-vision-b3a4.vercel.app",
 ];
 
 app.use(
@@ -25,6 +25,7 @@ app.use(
     origin: allowedOrigins,
   })
 );
+
       
 app.use(express.json());
 
