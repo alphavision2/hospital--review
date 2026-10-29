@@ -17,7 +17,7 @@ let connectionPromise;
 const allowedOrigins = [
   "http://localhost:5173",
   "https://hospital-review-9dkk-nine.vercel.app",
-  "https://hospital-review-9dkk.vercel.app",
+  "https://hospital-review-9dkk-ilhi3aj53-vision-b3a4.vercel.app",
 ];
 
 app.use(
