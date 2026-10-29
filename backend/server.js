@@ -14,17 +14,18 @@ dotenv.config();
 const app = express();
 let connectionPromise;
 
-
-const allowedorigins = [
+const allowedOrigins = [
   "http://localhost:5173",
-  "http://hospital-review-9dkk-nine.vercel.app",
-]
+  "https://hospital-review-9dkk-nine.vercel.app",
+  "https://hospital-review-9dkk.vercel.app",
+];
 
 app.use(
-  cors({                                  
-  origin:allowedorigins,
-})
-);       
+  cors({
+    origin: allowedOrigins,
+  })
+);
+      
 app.use(express.json());
 
 async function connectToDatabase() {
